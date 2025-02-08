@@ -1,6 +1,6 @@
 {
-  "name": "racejar",
-  "version": "1.1.3",
+  "name": "@aslakhellesoy/racejar",
+  "version": "1.1.4-pre.1",
   "description": "A testing framework agnostic Gherkin driver",
   "keywords": [
     "cucumber",
@@ -23,23 +23,29 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "default": "./src/index.ts",
-      "types": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./jest": {
-      "default": "./src/jest/index.ts",
-      "types": "./src/jest/index.ts"
+      "types": "./dist/jest/index.d.ts",
+      "import": "./dist/jest/index.mjs",
+      "require": "./dist/jest/index.js"
     },
     "./playwright": {
-      "default": "./src/playwright/index.ts",
-      "types": "./src/playwright/index.ts"
+      "types": "./dist/playwright/index.d.ts",
+      "import": "./dist/playwright/index.mjs",
+      "require": "./dist/playwright/index.js"
     },
     "./vitest": {
-      "default": "./src/vitest/index.ts",
-      "types": "./src/vitest/index.ts"
+      "types": "./dist/vitest/index.d.ts",
+      "import": "./dist/vitest/index.mjs",
+      "require": "./dist/vitest/index.js"
     }
   },
   "scripts": {
+    "build": "tsup",
+    "prepare": "npm run build",
     "check:lint": "biome lint .",
     "check:types": "tsc",
     "lint:fix": "biome lint --write .",
@@ -54,7 +60,8 @@
     "@playwright/test": "^1.50.1",
     "@sanity/pkg-utils": "^7.0.4",
     "typescript": "5.7.3",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "tsup": "^8.3.6"
   },
   "peerDependencies": {
     "@jest/globals": "^29.7.0",
