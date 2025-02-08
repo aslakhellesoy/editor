@@ -1,6 +1,7 @@
 import type {ParameterType} from '@cucumber/cucumber-expressions'
 import {test, type BrowserContext, type Page} from '@playwright/test'
 import {compileFeature} from '../compile-feature'
+import type {Hook} from '../hooks'
 import type {StepDefinition} from '../step-definitions'
 
 /**
@@ -20,15 +21,18 @@ export function Feature<
   TContext extends PlaywrightContext = PlaywrightContext,
 >({
   featureText,
+  hooks,
   stepDefinitions,
   parameterTypes,
 }: {
   featureText: string
+  hooks: Array<Hook<TContext>>
   stepDefinitions: Array<StepDefinition<TContext, any, any, any>>
   parameterTypes?: Array<ParameterType<unknown>>
 }) {
   const feature = compileFeature({
     featureText,
+    hooks,
     stepDefinitions,
     parameterTypes,
   })

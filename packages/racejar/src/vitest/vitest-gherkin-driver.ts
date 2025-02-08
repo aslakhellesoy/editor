@@ -1,6 +1,7 @@
 import type {ParameterType} from '@cucumber/cucumber-expressions'
 import {describe, test} from 'vitest'
 import {compileFeature} from '../compile-feature'
+import type {Hook} from '../hooks'
 import type {StepDefinition} from '../step-definitions'
 
 /**
@@ -8,15 +9,18 @@ import type {StepDefinition} from '../step-definitions'
  */
 export function Feature<TContext extends Record<string, any> = object>({
   featureText,
+  hooks,
   stepDefinitions,
   parameterTypes,
 }: {
   featureText: string
+  hooks: Array<Hook<TContext>>
   stepDefinitions: Array<StepDefinition<TContext, any, any, any>>
   parameterTypes?: Array<ParameterType<unknown>>
 }) {
   const feature = compileFeature({
     featureText,
+    hooks,
     stepDefinitions,
     parameterTypes,
   })
@@ -38,6 +42,9 @@ export function Feature<TContext extends Record<string, any> = object>({
             : test
 
       testFn(scenario.name, async () => {
+        for (const before of scenario.beforeHooks) {
+          await before()
+        }
         for (const step of scenario.steps) {
           await step()
         }

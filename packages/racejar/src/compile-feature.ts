@@ -5,6 +5,7 @@ import {
 } from '@cucumber/cucumber-expressions'
 import * as Gherkin from '@cucumber/gherkin'
 import * as Messages from '@cucumber/messages'
+import type {Hook} from './hooks'
 import type {StepDefinition} from './step-definitions'
 
 /**
@@ -18,6 +19,7 @@ export type CompiledFeature<TStepContext extends Record<string, any> = object> =
       name: string
       tag?: 'only' | 'skip'
       steps: Array<(stepContext?: TStepContext) => Promise<void> | void>
+      beforeHooks: Array<(stepContext?: TStepContext) => Promise<void> | void>
     }>
   }
 
@@ -29,10 +31,12 @@ export function compileFeature<
   TStepContext extends Record<string, any> = object,
 >({
   featureText,
+  hooks,
   stepDefinitions,
   parameterTypes,
 }: {
   featureText: string
+  hooks: Array<Hook<TStepContext>>
   stepDefinitions: Array<StepDefinition<TContext, any, any, any>>
   parameterTypes?: Array<ParameterType<unknown>>
 }): CompiledFeature<TStepContext> {
@@ -138,6 +142,10 @@ export function compileFeature<
             ? ('only' as const)
             : undefined,
       steps,
+      beforeHooks: hooks.map(
+        (hook) => (stepContext: TStepContext | undefined) =>
+          hook.callback(Object.assign(context, stepContext)),
+      ),
     }
   })
 
