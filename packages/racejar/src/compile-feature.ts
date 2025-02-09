@@ -37,7 +37,7 @@ export function compileFeature<
   parameterTypes,
 }: {
   featureText: string
-  hooks: Array<Hook<TStepContext>>
+  hooks?: Array<Hook<TStepContext>>
   stepDefinitions: Array<StepDefinition<TContext, any, any, any>>
   parameterTypes?: Array<ParameterType<unknown>>
 }): CompiledFeature<TStepContext> {
@@ -153,13 +153,13 @@ export function compileFeature<
             ? ('only' as const)
             : undefined,
       steps,
-      beforeHooks: hooks
+      beforeHooks: (hooks ?? [])
         .filter((hook) => hook.type === 'Before')
         .map(
           (hook) => (stepContext: TStepContext | undefined) =>
             hook.callback(Object.assign(context, stepContext)),
         ),
-      afterHooks: hooks
+      afterHooks: (hooks ?? [])
         .filter((hook) => hook.type === 'After')
         .map(
           (hook) => (stepContext: TStepContext | undefined) =>
