@@ -1,17 +1,25 @@
 import type {ParameterType} from '@cucumber/cucumber-expressions'
-import {test, type BrowserContext, type Page} from '@playwright/test'
+import {
+  test,
+  type PlaywrightTestArgs,
+  type PlaywrightTestOptions,
+  type PlaywrightWorkerArgs,
+  type PlaywrightWorkerOptions,
+} from '@playwright/test'
 import {compileFeature} from '../compile-feature'
 import type {Hook} from '../hooks'
 import type {StepDefinition} from '../step-definitions'
 
+type PlaywrightOptions = PlaywrightTestArgs &
+  PlaywrightTestOptions &
+  PlaywrightWorkerArgs &
+  PlaywrightWorkerOptions
+
 /**
  * @public
  */
-export type PlaywrightContext = {
-  playwright: {
-    page: Page
-    context: BrowserContext
-  }
+export type PlaywrightContext = Record<'string', any> & {
+  playwright: PlaywrightOptions
 }
 
 /**
@@ -53,14 +61,11 @@ export function Feature<
             ? test.skip
             : test
 
-      testFn(scenario.name, async ({page, context}) => {
+      testFn(scenario.name, async (playwrightOptions) => {
         for (const step of scenario.steps) {
           await step({
-            playwright: {
-              page,
-              context,
-            },
-          })
+            playwright: playwrightOptions,
+          } as TContext)
         }
       })
     }
