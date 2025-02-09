@@ -1,5 +1,5 @@
 import {expect} from 'vitest'
-import {Before} from '../src/hooks'
+import {After, Before} from '../src/hooks'
 import {Given, Then, When} from '../src/step-definitions'
 import {Feature} from '../src/vitest'
 
@@ -24,6 +24,9 @@ Feature({
   hooks: [
     Before((context: Context) => {
       context.greetingPrefix = 'Hello'
+    }),
+    After((context: Context) => {
+      expect(context.greeting).toBe('Hello Herman')
     }),
   ],
   stepDefinitions: [

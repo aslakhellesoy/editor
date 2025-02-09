@@ -54,6 +54,22 @@ export function Feature<
 
   describeFn(feature.name, () => {
     for (const scenario of feature.scenarios) {
+      for (const before of scenario.beforeHooks) {
+        test.beforeEach(async (playwrightOptions) => {
+          await before({
+            playwright: playwrightOptions,
+          } as TContext)
+        })
+      }
+
+      for (const after of scenario.afterHooks) {
+        test.afterEach(async (playwrightOptions) => {
+          await after({
+            playwright: playwrightOptions,
+          } as TContext)
+        })
+      }
+
       const testFn =
         scenario.tag === 'only'
           ? test.only

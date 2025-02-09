@@ -1,5 +1,5 @@
 import type {ParameterType} from '@cucumber/cucumber-expressions'
-import {describe, test} from '@jest/globals'
+import {afterEach, beforeEach, describe, test} from '@jest/globals'
 import {compileFeature} from '../compile-feature'
 import type {Hook} from '../hooks'
 import type {StepDefinition} from '../step-definitions'
@@ -34,6 +34,13 @@ export function Feature<TContext extends Record<string, any> = object>({
 
   describeFn(feature.name, () => {
     for (const scenario of feature.scenarios) {
+      for (const before of scenario.beforeHooks) {
+        beforeEach(before)
+      }
+
+      for (const after of scenario.afterHooks) {
+        afterEach(after)
+      }
       const testFn =
         scenario.tag === 'only'
           ? test.only

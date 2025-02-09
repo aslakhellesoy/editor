@@ -20,6 +20,7 @@ export type CompiledFeature<TStepContext extends Record<string, any> = object> =
       tag?: 'only' | 'skip'
       steps: Array<(stepContext?: TStepContext) => Promise<void> | void>
       beforeHooks: Array<(stepContext?: TStepContext) => Promise<void> | void>
+      afterHooks: Array<(stepContext?: TStepContext) => Promise<void> | void>
     }>
   }
 
@@ -142,10 +143,18 @@ export function compileFeature<
             ? ('only' as const)
             : undefined,
       steps,
-      beforeHooks: hooks.map(
-        (hook) => (stepContext: TStepContext | undefined) =>
-          hook.callback(Object.assign(context, stepContext)),
-      ),
+      beforeHooks: hooks
+        .filter((hook) => hook.type === 'Before')
+        .map(
+          (hook) => (stepContext: TStepContext | undefined) =>
+            hook.callback(Object.assign(context, stepContext)),
+        ),
+      afterHooks: hooks
+        .filter((hook) => hook.type === 'After')
+        .map(
+          (hook) => (stepContext: TStepContext | undefined) =>
+            hook.callback(Object.assign(context, stepContext)),
+        ),
     }
   })
 
